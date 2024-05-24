@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro ICT by Sahansa Jayawardhana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border-left: 5px solid #007bff;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #007bff;
+        }
+        .textarea-container {
+            margin-bottom: 20px;
+        }
+        .textarea-container textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #2e2e2e;
+            color: #e0e0e0;
+            resize: vertical;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .button-container button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button-container button:hover {
+            background-color: #0056b3;
+        }
+        .details {
+            margin-bottom: 20px;
+        }
+        .details .card {
+            background-color: #2e2e2e;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .details h2 {
+            margin-bottom: 10px;
+            font-size: 20px;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+        .details p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #e0e0e0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #888;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        function extractDetails() {
+    const text = document.getElementById("invitation-text").value;
+
+    const topicMatch = text.match(/Topic:\s*(.*)/);
+    const linkMatch = text.match(/Join Zoom Meeting\s*(https?:\/\/[^\s]+)/);
+    const idMatch = text.match(/Meeting ID:\s*([\d\s]+)/); // Modified regex to capture all digits and spaces
+    const passcodeMatch = text.match(/Passcode:\s*(\w+)/);
+
+    document.getElementById("meeting-topic").textContent = topicMatch ? topicMatch[1] : "Not Found";
+    document.getElementById("meeting-link").href = linkMatch ? linkMatch[1] : "#";
+    document.getElementById("meeting-link").textContent = linkMatch ? linkMatch[1] : "Not Found";
+    document.getElementById("meeting-id").textContent = idMatch ? idMatch[1] : "Not Found";
+    document.getElementById("meeting-passcode").textContent = passcodeMatch ? passcodeMatch[1] : "Not Found";
+}
+
+
+        function createPDF() {
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF();
+    const topic = document.getElementById("meeting-topic").textContent;
+    const link = document.getElementById("meeting-link").textContent;
+    const id = document.getElementById("meeting-id").textContent;
+    const passcode = document.getElementById("meeting-passcode").textContent;
+
+    // Set the filename to the meeting topic
+    const filename = `${topic.replace(/\s+/g, "_")}_Summary.pdf`;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor("#007bff");
+    doc.text("Pro ICT by Sahansa Jayawardhana", 10, 10);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.setTextColor("#000");
+    doc.text("Meeting Topic:", 10, 30);
+    doc.text(topic, 10, 40);
+
+    doc.text("Join Zoom Meeting:", 10, 60);
+    doc.text(link, 10, 70);
+
+    doc.text("Meeting ID:", 10, 90);
+    doc.text(id, 10, 100);
+
+    doc.text("Passcode:", 10, 120);
+    doc.text(passcode, 10, 130);
+
+    // Save the PDF with the dynamically generated filename
+    doc.save(filename);
+}
+
+
+        function sendWhatsApp() {
+            const topic = document.getElementById("meeting-topic").textContent;
+            const link = document.getElementById("meeting-link").textContent;
+            const id = document.getElementById("meeting-id").textContent;
+            const passcode = document.getElementById("meeting-passcode").textContent;
+
+            const message = `Pro ICT\n\n• Meeting Topic: ${topic}\n• Join Zoom Meeting: ${link}\n• Meeting ID: ${id}\n• Passcode: ${passcode}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Pro ICT by Sahansa Jayawardhana</h1>
+        </div>
+        <div class="textarea-container">
+            <textarea id="invitation-text" placeholder="Paste your Zoom invitation here..."></textarea>
+        </div>
+        <div class="button-container">
+            <button onclick="extractDetails()">Extract Details</button>
+        </div>
+        <div class="details">
+            <div class="card">
+                <h2>Meeting Topic</h2>
+                <p id="meeting-topic">[Meeting Topic]</p>
+            </div>
+            <div class="card">
+                <h2>Join Zoom Meeting</h2>
+                <p><a id="meeting-link" href="#">[Meeting Link]</a></p>
+            </div>
+            <div class="card">
+                <h2>Meeting ID</h2>
+                <p id="meeting-id">[Meeting ID]</p>
+            </div>
+            <div class="card">
+                <h2>Passcode</h2>
+                <p id="meeting-passcode">[Meeting Passcode]</p>
+            </div>
+        </div>
+        <div class="button-container">
+            <button onclick="createPDF()">Create PDF</button>
+            <button onclick="sendWhatsApp()">Send via WhatsApp</button>
+        </div>
+        <div class="footer">
+            <p>Remember to join a few minutes early to ensure you can connect without any issues.</p>
+        </div>
+    </div>
+</body>
+</html>
